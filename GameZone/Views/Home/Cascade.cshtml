@@ -1,0 +1,42 @@
+﻿@model Game
+
+<form>
+
+    <div class="form-group">
+    <label asp-for="CategoryId" class="form-label mt-4">Category</label>
+        <select class="form-select" asp-for="CategoryId" id="categoryId"
+            asp-items="@(ViewBag.categories)" data-placeholder="Select a Category">
+            <option disabled>Select Category</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Id" class="form-label mt-4">Game</label>
+        <select class="form-select" asp-for="Id" id="gameId"> </select>
+    </div>
+    
+</form>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () { GetGameByCategoryId(); })
+        $("#categoryId").change(function () { GetGameByCategoryId(); });
+        var GetGameByCategoryId = function () {
+            $.ajax({
+                url: '@Url.Action("GetGameByCategoryId","Home")',
+                type: 'GET',
+                data: {
+                    categoryId: $('#categoryId').val(),
+                },
+                success: function (data) {
+                    $('#gameId').find('option').remove()
+                    $(data).each(
+                        function (index, item) {
+                            $('#gameId').append('<option value="' + item.id + '" >' + item.name + '</option>')
+                        }
+                    );
+                }
+            })
+        }
+    </script>
+}

@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Game>
+@{
+    Pager pager = new Pager();
+    int pageNo = 0;
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+}
+@{
+    ViewData["Titles"] = "Home Page";
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning mt-5">
+
+        <h4 class="alert-heading ">No games !</h4>
+        <p class="mb-0">No games were added yet..</p>
+    </div>
+
+}
+else
+{
+    <div>
+    <form asp-controller="Home" asp-action="Index" class="d-flex">
+        <input name="seachName" class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+               value="@ViewBag.seachName">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+    </div>
+    <ul class="nav justify-content-center" >
+        @foreach (var game in ViewBag.Categories)
+        {
+            <li class="nav-item">
+                <a class="nav-link active" asp-action="Index" asp-route-categoryName="@game.Name">@game.Name</a>
+            </li>
+        }
+    </ul>
+    <div class="row mt-5">
+     
+        @foreach (var game in Model)
+        {
+            <div class=" col-lg-4 col-md-6">
+                <a class="card text-white text-decoration-none  bg-secondary mb-3" asp-action="Detail" asp-controller="Games" asp-route-id="@game.Id">
+                    <div class="card-body" style="background-image:url(@($"{FileSettings.ImagesPath}/{game.Cover}")); background-size:cover; background-position:center ; height:400px;">
+                        <div class="h-100 d-flex align-items-end">
+                            <span class="badge rounded-pill bg-light fs-4">@game.Category?.Name</span>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                        <h5>@game.Name</h5>
+                        <div>
+                            @foreach (var gd in game.Devices)
+                            {
+                                <i class="@gd.Device.Icon me-2 fs-4"></i>
+                            }
+                        </div>
+                    </div>
+
+                </a>
+            </div>
+        }
+        <nav aria-label="Page navigation example">
+            @if (pager.TotalPages > 0)
+            {
+                <ul class="pagination" style="justify-content: center;">
+                    @for(var pge=pager.StartPage;pge <= pager.EndPage; pge++)
+                    {
+                        <li class="page-item @(pge==pager.CurrentPage ? "active": "")">
+                            <a class="page-link" asp-controller="Home" asp-action="Index"asp-route-pg="@pge">@pge</a>
+                        </li>
+                    }
+                 </ul>
+            }    
+        </nav>
+        
+    </div>
+}
